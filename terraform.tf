@@ -13,7 +13,7 @@ module "postgresql" {
   source = "terraform-aws-modules/rds/aws"
   identifier = "my-postgresql-db"
   engine = "postgres"
-  engine_version = "12.17"
+  engine_version = "16.3"
   instance_class = "db.t3.micro"
 #   name = "postgresql"
   username = "test"
@@ -21,19 +21,28 @@ module "postgresql" {
   port = 5432
   allocated_storage = 20
   max_allocated_storage = 100
+  apply_immediately = true
   storage_type = "gp2"
   storage_encrypted = true
   multi_az = false
   publicly_accessible = false
   vpc_security_group_ids = [aws_security_group.default.id]
   db_subnet_group_name = aws_db_subnet_group.default.name
-  parameter_group_name = aws_db_parameter_group.default.name
+  parameter_group_name = aws_db_parameter_group.default16.name
   maintenance_window = "Mon:00:00-Mon:03:00"
   backup_window = "03:00-06:00"
-  family = "postgres12"
-#   blue_green_update = {
-#     enabled = true
-#   }
+  family = "postgres16"
+  parameters = [
+  # required for blue-green deployment
+  {
+    name         = "rds.logical_replication"
+    value        = 1
+    apply_method = "pending-reboot"
+  }
+]
+  blue_green_update = {
+    enabled = true
+  }
     tags = {
     Name = "postgresql"
   }
@@ -95,7 +104,21 @@ resource "aws_db_parameter_group" "default" {
   parameter {
     name  = "shared_preload_libraries"
     value = "pg_stat_statements"
+    apply_method = "pending-reboot"
   }
+
+}
+
+resource "aws_db_parameter_group" "default16" {
+  name         = "default16"
+  family       = "postgres16"
+  description  = "default"
+  parameter {
+    name  = "shared_preload_libraries"
+    value = "pg_stat_statements"
+    apply_method = "pending-reboot"
+  }
+
 }
 
 
