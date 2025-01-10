@@ -9,11 +9,12 @@ terraform {
 }
 
 # postgresql12.17を作成
-module "postgresql" {
+
+module "postgresql_2" {
   source = "terraform-aws-modules/rds/aws"
-  identifier = "my-postgresql-db"
+  identifier = "my-postgresql-db-2"
   engine = "postgres"
-  engine_version = "16.3"
+  engine_version = "12.19"
   instance_class = "db.t3.micro"
 #   name = "postgresql"
   username = "test"
@@ -31,7 +32,7 @@ module "postgresql" {
   parameter_group_name = aws_db_parameter_group.default16.name
   maintenance_window = "Mon:00:00-Mon:03:00"
   backup_window = "03:00-06:00"
-  family = "postgres16"
+  family = "postgres12"
   parameters = [
   # required for blue-green deployment
   {
@@ -40,9 +41,9 @@ module "postgresql" {
     apply_method = "pending-reboot"
   }
 ]
-  blue_green_update = {
-    enabled = true
-  }
+  # blue_green_update = {
+  #   enabled = true
+  # }
     tags = {
     Name = "postgresql"
   }
@@ -67,6 +68,8 @@ resource "aws_security_group" "default" {
     cidr_blocks = ["0.0.0.0/0"]
     }
 }
+
+
 
 # VPC
 resource "aws_vpc" "default" {

@@ -74,3 +74,9 @@ Do you want to perform these actions?
   Terraform will perform the actions described above.
   Only 'yes' will be accepted to approve.
 ```
+
+
+# 2400111 memo追加
+- 以下のパラメータでは切り替えまですべて進んでしまう
+- 以下を試す
+- https://github.com/hashicorp/terraform-provider-aws/blob/6e4dc6ce181532441147db471dae10a26de83211/docs/design-decisions/rds-bluegreen-deployments.md
